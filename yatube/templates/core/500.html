@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %} 
+    <title>Custom 500</title>
+  {% endblock %} 
+
+{% block content %}
+  <h1>Custom 500</h1>
+  <p>При обработке адреса {{ path }} возникла внутренняя проблема сервера</p>
+  <a href="{% url 'posts:first' %}">Перейти на главную</a>
+{% endblock %} 
