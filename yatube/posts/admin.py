@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Post, Group
+from .models import Post, Group, Comment, Follow
 
 
 @admin.register(Group)
@@ -29,3 +29,25 @@ class PostAdmin(admin.ModelAdmin):
     search_fields = ('text',)
     list_filter = ('pub_date',)
     empty_value_display = '-пусто-'
+
+
+@admin.register(Comment)
+class PostComment(admin.ModelAdmin):
+    '''Источник конфигурации для модели Comment.'''
+    list_display = (
+        'post',
+        'text',
+        'author'
+    )
+    search_fields = ('text',)
+    empty_value_display = '-пусто-'
+
+
+@admin.register(Follow)
+class PostFollow(admin.ModelAdmin):
+    '''Источник конфигурации для модели Comment.'''
+    list_display = (
+        'author',
+        'user'
+    )
+    search_fields = ('user',)

@@ -22,6 +22,7 @@
           Контент не подвезли 
         {% endblock %} 
         {% if page_obj.has_other_pages %}
+          <nav aria-label="Page navigation" class="my-5">
           {% include 'posts/paginator.html' %} 
         {% endif %}
       </div>

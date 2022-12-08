@@ -1,20 +1,21 @@
 import shutil
 import tempfile
 
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 
 from posts.models import Post, Group, User
-from posts.forms import PostForm
+from posts.forms import PostForm, CommentForm
 from posts.constants import VIEW_LIST_COUNT_OF_PAGINATOR as VIEW_LIST
 from posts.constants import POSTS_COUNT_FOR_TEST as POSTS
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
 
+@override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class PostPagesTests(TestCase):
     @classmethod
     def tearDownClass(cls):
@@ -54,6 +55,18 @@ class PostPagesTests(TestCase):
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
 
+    def context_testing(self, post, *args):
+        post_testing_parameters = {
+            post.author.username: self.post.author.username,
+            post.text: self.post.text,
+            post.group.title: self.post.group.title,
+            post.id: self.post.id,
+            post.image: self.post.image
+        }
+        for new_parameter, parameter in post_testing_parameters.items():
+            with self.subTest(new_parameter=new_parameter):
+                self.assertEqual(new_parameter, parameter)
+
     def test_pages_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""
         templates_pages_names = {
@@ -77,16 +90,7 @@ class PostPagesTests(TestCase):
         """Шаблон index сформирован с правильным контекстом."""
         response = self.authorized_client.get(reverse('posts:first'))
         post = response.context['page_obj'][0]
-        post_testing_parameters = {
-            post.author.username: self.post.author.username,
-            post.text: self.post.text,
-            post.group.title: self.post.group.title,
-            post.id: self.post.id,
-            post.image: self.post.image
-        }
-        for new_parameter, parameter in post_testing_parameters.items():
-            with self.subTest(new_parameter=new_parameter):
-                self.assertEqual(new_parameter, parameter)
+        self.context_testing(post, self)
 
     def test_group_posts_correct_context(self):
         """Шаблон group_posts сформирован с правильным контекстом."""
@@ -96,16 +100,7 @@ class PostPagesTests(TestCase):
         group = (response.context['group'])
         self.assertEqual(group.title, self.post.group.title)
         post = response.context['page_obj'][0]
-        post_testing_parameters = {
-            post.author.username: self.post.author.username,
-            post.text: self.post.text,
-            post.group.title: self.post.group.title,
-            post.id: self.post.id,
-            post.image: self.post.image
-        }
-        for new_parameter, parameter in post_testing_parameters.items():
-            with self.subTest(new_parameter=new_parameter):
-                self.assertEqual(new_parameter, parameter)
+        self.context_testing(post, self)
 
     def test_profile_correct_context(self):
         """Шаблон profile сформирован с правильным контекстом."""
@@ -114,17 +109,11 @@ class PostPagesTests(TestCase):
                 'username': self.user}))
         author = response.context['author']
         post = response.context['page_obj'][0]
-        post_testing_parameters = {
-            post.author.username: self.post.author.username,
-            post.text: self.post.text,
-            post.group.title: self.post.group.title,
-            post.id: self.post.id,
-            post.image: self.post.image
-        }
-        for new_parameter, parameter in post_testing_parameters.items():
-            with self.subTest(new_parameter=new_parameter):
-                self.assertEqual(new_parameter, parameter)
+        self.context_testing(post, self)
         self.assertEqual(author.username, self.post.author.username)
+        following = response.context['following']
+        self.assertEqual(following, self.user.follower.filter(
+            author=author).exists())
 
     def test_post_detail_correct_context(self):
         """Шаблон post_detail сформирован с правильным контекстом."""
@@ -132,18 +121,9 @@ class PostPagesTests(TestCase):
             'posts:post_detail', kwargs={
                 'post_id': self.post.id}))
         post = response.context['post']
-        post_testing_parameters = {
-            post.author.username: self.post.author.username,
-            post.text: self.post.text,
-            post.group.title: self.post.group.title,
-            post.id: self.post.id,
-            post.image: self.post.image,
-            post.comments: self.post.comments
-        }
-        for new_parameter, parameter in post_testing_parameters.items():
-            with self.subTest(new_parameter=new_parameter):
-                self.assertEqual(new_parameter, parameter)
+        self.context_testing(post, self)
         self.assertEqual(post.id, self.post.id)
+        self.assertIsInstance(response.context.get('form'), CommentForm)
 
     def test_create_post_correct_context(self):
         """Шаблон create_post сформирован с правильным контекстом."""

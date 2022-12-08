@@ -1,10 +1,11 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models import UniqueConstraint
+
 from core.models import CreatedModel
+from posts.constants import MAX_LEN_OF_STRING as MAX_LEN
 
 User = get_user_model()
-
-MAX_LEN = 15
 
 
 class Group(models.Model):
@@ -82,3 +83,4 @@ class Follow(CreatedModel):
         on_delete=models.CASCADE,
         related_name='following'
     )
+    UniqueConstraint(fields=['user', 'author'], name='unique_following')

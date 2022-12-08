@@ -49,25 +49,38 @@ class PostURLTests(TestCase):
                     error_acces
                 )
 
-    def test_post_create_url(self):
-        """Страница create/ доступна авторизованному пользователю."""
-        response = self.authorized_client.get('/create/')
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-
-    def test_post_edit_url(self):
-        '''Страница edit/ доступна авторизованному пользователю.'''
-        response = self.authorized_client.get(
-            f'/posts/{self.post.id}/edit/')
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+    def test_post_create_post_edit_url(self):
+        """Страницы доступны авторизованному пользователю."""
+        url_names = (
+            '/create/',
+            f'/posts/{self.post.id}/comment/',
+            f'/posts/{self.post.id}/edit/',
+        )
+        for address in url_names:
+            with self.subTest(address=address):
+                response = self.authorized_client.get(address, follow=True)
+                error_acces = f'address{address}, dont have access'
+                self.assertEqual(
+                    response.status_code,
+                    HTTPStatus.OK,
+                    error_acces
+                )
 
     def test_post_edit_url_redirect_anonymous(self):
-        """Страница posts/<post_id>/edit/ перенаправление неавтаризованного
-        пользователя."""
-        response = self.client.get(
-            f'/posts/{self.post.id}/edit/', follow=True)
-        self.assertRedirects(
-            response, (reverse('users:login') + '?next=' + reverse(
-                'posts:post_edit', kwargs={'post_id': self.post.id})))
+        """Страницы перенаправляют неавтаризованного пользователя."""
+        url_names = {
+            f'/posts/{self.post.id}/edit/': reverse(
+                'users:login') + '?next=' + reverse(
+                    'posts:post_edit', kwargs={'post_id': self.post.id}),
+            f'/posts/{self.post.id}/comment/': reverse(
+                'users:login') + '?next=' + reverse(
+                    'posts:add_comment', kwargs={'post_id': self.post.id}),
+            '/create/': reverse('users:login') + '?next=/create/'
+        }
+        for address, reverse_name in url_names.items():
+            with self.subTest(address=address):
+                response = self.client.get(address, follow=True)
+                self.assertRedirects(response, reverse_name)
 
     def test_post_edit_url_redirect_not_athor(self):
         """Страница posts/<post_id>/edit/ перенаправление неавтора."""
@@ -75,21 +88,6 @@ class PostURLTests(TestCase):
             f'/posts/{self.post.id}/edit/', follow=True)
         self.assertRedirects(
             response, (f'/posts/{self.post.id}/'))
-
-    def test_comment_url_redirect_anonymous(self):
-        """Страница posts/<post_id>/comment/ перенаправление неавтаризованного
-        пользователя."""
-        response = self.client.get(
-            f'/posts/{self.post.id}/comment/', follow=True)
-        self.assertRedirects(
-            response, (reverse('users:login') + '?next=' + reverse(
-                'posts:add_comment', kwargs={'post_id': self.post.id})))
-
-    def test_post_create_url_redirect_anonymous(self):
-        """Страница create/ перенаправляет анонимного пользователя."""
-        response = self.client.get('/create/', follow=True)
-        self.assertRedirects(response, (
-            reverse('users:login') + '?next=/create/'))
 
     def test_urls_uses_correct_template(self):
         """URL-адрес использует соответствующий шаблон."""

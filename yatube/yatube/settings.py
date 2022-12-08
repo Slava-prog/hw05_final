@@ -20,7 +20,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'posts:first'
-# LOGOUT_REDIRECT_URL = 'posts:index'
 
 CACHES = {
     'default': {
