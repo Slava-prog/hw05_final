@@ -75,7 +75,8 @@ class PostURLTests(TestCase):
             f'/posts/{self.post.id}/comment/': reverse(
                 'users:login') + '?next=' + reverse(
                     'posts:add_comment', kwargs={'post_id': self.post.id}),
-            '/create/': reverse('users:login') + '?next=/create/'
+            '/create/': reverse('users:login') + '?next=' + reverse(
+                    'posts:post_create')
         }
         for address, reverse_name in url_names.items():
             with self.subTest(address=address):

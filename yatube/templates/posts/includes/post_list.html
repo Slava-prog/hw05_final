@@ -23,12 +23,11 @@
     {% with request.resolver_match.view_name as view_name %}
     {% if view_name != 'posts:group_list' %}
     <li>
-      Группа: 
       {% if post.group %}
-        {{ post.group }} 
+        Группа: {{ post.group.title }} 
         <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
       {% else %}
-        Не назначена
+        Группа не назначена
       {% endif %}
     </li> 
     {% endif %} 

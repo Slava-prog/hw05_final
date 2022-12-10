@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from posts.models import Group, Post, User
+from posts.models import Group, Post, User, Follow
 
 
 class FollowTest(TestCase):
@@ -43,9 +43,11 @@ class FollowTest(TestCase):
     def test_follow_delete(self):
         """Авторизованный пользователь может удалять других пользователей
             из подписок."""
-        self.authorized_client1.post(reverse(
-            'posts:profile_follow', kwargs={
-                'username': self.post.author.username}))
+
+        Follow.objects.create(
+            author=self.post.author,
+            user=self.user1
+        )
         self.assertTrue(self.user1.follower.filter(
             author=self.post.author).exists())
         self.authorized_client1.post(reverse(

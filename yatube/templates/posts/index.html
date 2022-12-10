@@ -6,7 +6,7 @@
   {% block content %}
     <h1>Последние обновления на сайте</h1>
     {% if page_obj.has_other_pages %}
-      {% include 'posts/paginator.html' %} 
+      {% include 'posts/includes/paginator.html' %} 
     {% endif %}
     {% include 'posts/includes/switcher.html' %}
     {% for post in page_obj %}

@@ -20,10 +20,9 @@ class PostModelTest(TestCase):
 
     def test_models_have_correct_object_names(self):
         """Проверяем, что у моделей корректно работает __str__."""
-        expected = self.post.text[:MAX_LEN]
         field_verboses = {
-            expected: str(self.post),
-            self.group.title: 'Тестовая группа'
+            self.post.text[:MAX_LEN]: str(self.post),
+            self.group.title: str(self.group)
         }
         for field, expected_value in field_verboses.items():
             with self.subTest(field=field):

@@ -59,7 +59,7 @@ class PostFormTests(TestCase):
 
     def test_create_post(self):
         """Валидная форма создает запись в Post."""
-        post_id_list = Post.objects.values_list("id", flat=True)
+        post_id_list = list(Post.objects.values_list('id', flat=True))
         uploaded = SimpleUploadedFile(
             name='test_image.gif',
             content=self.small_gif,
@@ -75,10 +75,9 @@ class PostFormTests(TestCase):
             data=form_data,
             follow=True
         )
-        for id in post_id_list:
-            post_list_new = Post.objects.exclude(id=id)
+        post_list_new = Post.objects.exclude(id__in=post_id_list)
         self.assertEqual(post_list_new.count(), 1)
-        post1 = post_list_new[0]
+        post1 = post_list_new.first()
         field_verboses = {
             post1.text: form_data['text'],
             post1.group.id: form_data['group'],
@@ -119,10 +118,12 @@ class PostFormTests(TestCase):
         for field, expected_value in field_verboses.items():
             with self.subTest(field=field):
                 self.assertEqual(field, expected_value)
+        self.assertEqual(post.author, self.post.author)
 
     def test_create_comment(self):
         """Валидная форма создает комментарий к посту."""
-        self.assertEqual(self.post.comments.count(), 0)
+        comment_list = list(Comment.objects.filter(
+            post=self.post).values_list('id', flat=True))
         form_data = {
             'text': 'Test_comment',
         }
@@ -132,6 +133,7 @@ class PostFormTests(TestCase):
             data=form_data,
             follow=True
         )
-        self.assertEqual(self.post.comments.count(), 1)
-        comment = Comment.objects.filter(post=self.post).first()
-        self.assertEqual(comment.text, form_data['text'])
+        comments = Comment.objects.filter(
+            post=self.post).exclude(id__in=comment_list)
+        self.assertEqual(comments.count(), 1)
+        self.assertEqual(comments.first().text, form_data['text'])

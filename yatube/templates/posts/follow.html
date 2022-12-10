@@ -7,7 +7,7 @@
     <h1>Избранные авторы</h1>
     <h3>Всего у пользователя подписок: {{ user.follower.count }} </h3>
     {% if page_obj.has_other_pages %}
-      {% include 'posts/paginator.html' %} 
+      {% include 'posts/includes/paginator.html' %} 
     {% endif %}
     {% include 'posts/includes/switcher.html' %}
     {% for post in page_obj %}

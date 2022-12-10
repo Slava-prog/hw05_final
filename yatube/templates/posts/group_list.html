@@ -9,7 +9,7 @@
     <h1> {{ group.title }} </h1>
     <p>{{ group.description }}</p>
     {% if page_obj.has_other_pages %}
-      {% include 'posts/paginator.html' %} 
+      {% include 'posts/includes/paginator.html' %} 
     {% endif %}
     {% for post in page_obj %}
       {% include 'posts/includes/post_list.html' %}

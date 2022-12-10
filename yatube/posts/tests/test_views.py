@@ -9,8 +9,9 @@ from django.conf import settings
 
 from posts.models import Post, Group, User
 from posts.forms import PostForm, CommentForm
-from posts.constants import VIEW_LIST_COUNT_OF_PAGINATOR as VIEW_LIST
-from posts.constants import POSTS_COUNT_FOR_TEST as POSTS
+from posts.constants import (
+    VIEW_LIST_COUNT_OF_PAGINATOR as VIEW_LIST, POSTS_COUNT_FOR_TEST as POSTS
+)
 
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
@@ -57,9 +58,9 @@ class PostPagesTests(TestCase):
 
     def context_testing(self, post, *args):
         post_testing_parameters = {
-            post.author.username: self.post.author.username,
+            post.author: self.post.author,
             post.text: self.post.text,
-            post.group.title: self.post.group.title,
+            post.group: self.post.group,
             post.id: self.post.id,
             post.image: self.post.image
         }
@@ -98,7 +99,7 @@ class PostPagesTests(TestCase):
             'posts:group_list', kwargs={
                 'slug': self.group.slug}))
         group = (response.context['group'])
-        self.assertEqual(group.title, self.post.group.title)
+        self.assertEqual(group, self.post.group)
         post = response.context['page_obj'][0]
         self.context_testing(post, self)
 
@@ -110,7 +111,7 @@ class PostPagesTests(TestCase):
         author = response.context['author']
         post = response.context['page_obj'][0]
         self.context_testing(post, self)
-        self.assertEqual(author.username, self.post.author.username)
+        self.assertEqual(author, self.post.author)
         following = response.context['following']
         self.assertEqual(following, self.user.follower.filter(
             author=author).exists())
@@ -122,7 +123,6 @@ class PostPagesTests(TestCase):
                 'post_id': self.post.id}))
         post = response.context['post']
         self.context_testing(post, self)
-        self.assertEqual(post.id, self.post.id)
         self.assertIsInstance(response.context.get('form'), CommentForm)
 
     def test_create_post_correct_context(self):
@@ -172,18 +172,11 @@ class PostPagesTests(TestCase):
             reverse('posts:post_edit', kwargs={'post_id': self.post.id}),
             follow=True
         )
-        form_field = response.context.get('form').instance
-        field_verboses = {
-            form_field.text: self.post.text,
-            form_field.group: self.post.group,
-            form_field.image: self.post.image
-        }
-        for field, expected_value in field_verboses.items():
-            with self.subTest(field=field):
-                self.assertEqual(field, expected_value)
+        self.assertIsInstance(response.context.get('form'), PostForm)
         post = response.context.get('post')
         self.assertEqual(post.id, self.post.id)
         self.assertTrue(response.context.get('is_edit'))
+        self.assertIsInstance(response.context.get('is_edit'), bool)
 
 
 class PaginatorViewsTest(TestCase):
