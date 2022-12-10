@@ -54,7 +54,7 @@ class PostURLTests(TestCase):
         url_names = (
             '/create/',
             f'/posts/{self.post.id}/comment/',
-            f'/posts/{self.post.id}/edit/',
+            f'/posts/{self.post.id}/edit/'
         )
         for address in url_names:
             with self.subTest(address=address):
