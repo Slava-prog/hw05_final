@@ -80,7 +80,7 @@ class PostURLTests(TestCase):
         }
         for address, reverse_name in url_names.items():
             with self.subTest(address=address):
-                response = self.client.get(address, follow=True)
+                response = self.client.get(address)
                 self.assertRedirects(response, reverse_name)
 
     def test_post_edit_url_redirect_not_athor(self):
