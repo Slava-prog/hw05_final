@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.db.models import UniqueConstraint
 
 from core.models import CreatedModel
 from posts.constants import MAX_LEN_OF_STRING as MAX_LEN
@@ -85,4 +84,9 @@ class Follow(CreatedModel):
     )
 
     class Meta:
-        UniqueConstraint(fields=['user', 'author'], name='unique_following')
+        constraints = [
+            models.UniqueConstraint(fields=(
+                'user', 'author'), name='unique_follow'),
+            models.CheckConstraint(check=~models.Q(user=models.F(
+                'author')), name='dont_follow_your_self'),
+        ]
