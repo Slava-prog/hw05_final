@@ -13,7 +13,7 @@
           Войти на сайт
         </div>
         <div class="card-body">
-          {% include 'users\includes\form_error.html' %}
+          {% include 'users/includes/form_error.html' %}
           <form method="post" action="{% url 'users:login' %}">
             
           {% csrf_token %}
