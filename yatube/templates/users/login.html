@@ -13,13 +13,13 @@
           Войти на сайт
         </div>
         <div class="card-body">
-          {% include 'users/includes/form_error.html' %}
+          {% include 'includes/form_error.html' %}
           <form method="post" action="{% url 'users:login' %}">
             
           {% csrf_token %}
 
           {% for field in form %}
-            {% include 'posts/includes/form.html' %}
+            {% include 'includes/form.html' %}
           {% endfor %}
           <div class="col-md-6 offset-md-4">
             <button type="submit" class="btn btn-primary">

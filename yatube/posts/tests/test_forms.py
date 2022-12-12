@@ -122,8 +122,7 @@ class PostFormTests(TestCase):
 
     def test_create_comment(self):
         """Валидная форма создает комментарий к посту."""
-        comment_list = list(Comment.objects.filter(
-            post=self.post).values_list('id', flat=True))
+        comment_list = list(Comment.objects.values_list('id', flat=True))
         form_data = {
             'text': 'Test_comment',
         }
@@ -133,7 +132,14 @@ class PostFormTests(TestCase):
             data=form_data,
             follow=True
         )
-        comments = Comment.objects.filter(
-            post=self.post).exclude(id__in=comment_list)
+        comments = Comment.objects.exclude(id__in=comment_list)
+        comment = comments.first()
         self.assertEqual(comments.count(), 1)
-        self.assertEqual(comments.first().text, form_data['text'])
+        field_verboses = {
+            comment.text: form_data['text'],
+            comment.post: self.post,
+            comment.author: self.user
+        }
+        for field, expected_value in field_verboses.items():
+            with self.subTest(field=field):
+                self.assertEqual(field, expected_value)

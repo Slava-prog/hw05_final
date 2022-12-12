@@ -21,7 +21,7 @@
               </div>
               <div class="card-body">  
                 {% load user_filters %}
-                {% include 'posts/includes/form_error.html' %}
+                {% include 'includes/form_error.html' %}
 
                 <form method="post" action=
                 {% if is_edit %}
@@ -35,7 +35,7 @@
                   {% csrf_token %}
                              
                   {% for field in form %}
-                    {% include 'posts/includes/form.html' %}
+                    {% include 'includes/form.html' %}
                   {% endfor %}
                   <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary">

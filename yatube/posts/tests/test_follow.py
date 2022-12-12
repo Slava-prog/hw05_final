@@ -48,8 +48,6 @@ class FollowTest(TestCase):
             author=self.post.author,
             user=self.user1
         )
-        self.assertTrue(self.user1.follower.filter(
-            author=self.post.author).exists())
         self.authorized_client1.post(reverse(
             'posts:profile_unfollow', kwargs={
                 'username': self.post.author.username}))
@@ -71,8 +69,6 @@ class FollowTest(TestCase):
         self.authorized_client2.post(reverse(
             'posts:profile_follow', kwargs={
                 'username': self.post.author.username}))
-        response = self.authorized_client2.get(reverse('posts:follow_index'))
-        post = response.context['page_obj'][0]
         response = self.authorized_client1.get(reverse('posts:follow_index'))
         post_list = response.context['page_obj']
-        self.assertNotIn(post, post_list)
+        self.assertNotIn(self.post, post_list)
