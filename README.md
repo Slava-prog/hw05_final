@@ -1,3 +1,34 @@
-# hw05_final
+### **Описание.**
+Проект для размещения своих постов и чтения постов других пользователей. 
+В данном случае представлена версия проекта, разработанная по класической MVT-архитектуре.
 
-[![CI](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml/badge.svg?branch=master)](https://github.com/yandex-praktikum/hw05_final/actions/workflows/python-app.yml)
+### **Установка.**
+
+#### *Как запустить проект:*
+Клонировать репозиторий и перейти в него в командной строке:
+git clone ...
+cd hw05_final
+
+#### *Cоздать и активировать виртуальное окружение:*
+python3 -m venv venv
+source venv/bin/activate
+
+#### *Установить зависимости из файла requirements.txt:*
+python3 -m pip install --upgrade pip
+pip install -r requirements.txt
+
+#### *Выполнить миграции:*
+cd yatube
+python3 manage.py migrate
+
+#### *Запустить проект:*
+python3 manage.py runserver
+Можете переходить по ссылочке и пользоваться :) 
+(конечно, если хочется, чтоб красиво все было, придется кинуть в папку /static/css/ файл со статикой bootstrap.min.css)
+
+#### *Для простоты ориентации в проекте:*
+1. Модели, views и  urls постов распологаются в папке posts
+2. Все то же самое для пользователей смотри в папке users
+3. В папке about лежат views, urls для вкладок об авторе и технологиях
+4. В папке core - views кастомных ошибок
+5. Весь html ищите в templates :)
